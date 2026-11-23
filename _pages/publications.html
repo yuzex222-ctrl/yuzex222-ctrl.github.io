@@ -5,32 +5,24 @@ permalink: /publications/
 author_profile: true
 ---
 
-{% if site.author.googlescholar %}
-  <div class="wordwrap">You can also find my articles on <a href="{{site.author.googlescholar}}">my Google Scholar profile</a>.</div>
-{% endif %}
+<p>Authors are listed alphabetically.</p>
 
-{% include base_path %}
-
-<!-- New style rendering if publication categories are defined -->
-{% if site.publication_category %}
-  {% for category in site.publication_category  %}
-    {% assign title_shown = false %}
-    {% for post in site.publications reversed %}
-      {% if post.category != category[0] %}
-        {% continue %}
-      {% endif %}
-      {% unless title_shown %}
-        <h2>{{ category[1].title }}</h2><hr />
-        {% assign title_shown = true %}
-      {% endunless %}
-      {% include archive-single.html %}
+{% assign ordered_publications = site.publications | sort: "display_order" %}
+{% for category in site.publication_category %}
+  {% assign category_papers = ordered_publications | where: "category", category[0] %}
+  {% if category_papers.size > 0 %}
+    <h2>{{ category[1].title }}</h2>
+    {% for paper in category_papers %}
+      <div class="list__item">
+        <article class="archive__item">
+          <h3 class="archive__item-title"><a href="{{ paper.url | relative_url }}">{{ paper.title }}</a></h3>
+          <p>{{ paper.authors }}</p>
+          <p><em>{{ paper.venue_label }}</em></p>
+          {% if paper.paperurl %}
+            <p><a href="{{ paper.paperurl }}">arXiv</a></p>
+          {% endif %}
+        </article>
+      </div>
     {% endfor %}
-  {% endfor %}
-{% else %}
-  {% for post in site.publications reversed %}
-    {% include archive-single.html %}
-  {% endfor %}
-{% endif %}
-
-
-
+  {% endif %}
+{% endfor %}
